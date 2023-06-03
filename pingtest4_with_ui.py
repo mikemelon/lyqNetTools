@@ -1,9 +1,7 @@
 import sys
-import threading
-import time
 from pythonping import ping
 from multiprocessing import Pool
-from dns_finder import Ui_MainWindow
+from qt5.dns_finder import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -75,7 +73,7 @@ class WorkThread(QThread):
         # print('run, thread = ', QThread.currentThread())
         # print('run, thread 2 = ', self.thread())
         # print('run, thread 3 = ', threading.currentThread())
-        pool = Pool(255)
+        pool = Pool(50)
         result_list = []
         ip2comment, comment2ip = read_dns()
         for ip in ip2comment.keys():
