@@ -5,3 +5,7 @@
 - **pingtest4_with_ui.py**  ---- “公共DNS测速"，对常见的公共DNS服务器进行测速和比较的工具。例如，阿里DNS, 腾讯DNS，谷歌DNS等。
 
 ![公共DNS测速截图](screenshots/dns_compare.png)
+
+- **lan_manager_test1.py**  ---- "局域网管理者"，搜索本地局域网里的存活主机，并对指定主机进行ARP缓存欺骗，对指定主机进行SYN Flood测试。
+
+![局域网管理者截图](screenshots/lan_manager1.png)
