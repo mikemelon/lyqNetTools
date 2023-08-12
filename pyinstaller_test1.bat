@@ -1,0 +1,1 @@
+pyinstaller -F -w --hidden-import pyautogui --hidden-import keyboard --clean black_screen_test1.py
