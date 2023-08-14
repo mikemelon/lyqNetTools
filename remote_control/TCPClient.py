@@ -2,7 +2,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
 import io
 
-serverName = '192.168.48.130'
+serverName = '192.168.48.130' # Win7 remote computer
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
