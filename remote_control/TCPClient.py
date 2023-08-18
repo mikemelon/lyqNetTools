@@ -10,7 +10,6 @@ sentence = input('Input lowercase sentence:')
 clientSocket.send(sentence.encode())
 receivedMessage = clientSocket.recv(5*1024*1024)
 
-
 if sentence.upper() == 'CAPTURE_SCREEN':
     print('picture saved!')
     im_show = Image.open(io.BytesIO(receivedMessage))

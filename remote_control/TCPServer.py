@@ -3,6 +3,7 @@ import tkinter
 import pyautogui
 import io
 import os
+from remote_utils.auto_typing import auto_open_notepad_and_type_str
 
 
 def black_screen():
@@ -69,5 +70,12 @@ while True:
         image_bytes = bytes_io.getvalue()
 
         connectionSocket.send(image_bytes)
+
+    elif command_str == 'AUTO_TYPING':
+        print('I will let you typing some characters')
+        auto_open_notepad_and_type_str('Please study hard, or you should be controlled!')
+
+        connectionSocket.send(command_str.encode())
+
 
     connectionSocket.close()

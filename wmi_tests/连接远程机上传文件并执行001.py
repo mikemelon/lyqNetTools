@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # Step 1: copy the file to remote computer
     # 该步骤如果出错，有可能的原因是, Win10现在已经默认不支持WinXP/Win7里使用的SMB 1.x协议，需要安装此可选功能功能。
     # 另一种解决方法是，使用WMIHacker提供的命令行工具，它不需要安装SMB 1.x客户端。
-    execute_cmd_by_wmi(my_wmi_obj, r'net use \\192.168.48.130 /user:lynulyq tplink')  # 如果提示用户名密码不正确，则应远程执行这句
+    execute_cmd_by_wmi(my_wmi_obj, r'net use \\192.168.48.130 /user:lynulyq 12345678')  # 如果提示用户名密码不正确，则应远程执行这句
     copy_local_file_to_remote(r'D:\PycharmProjects\lyqNetTools\dist\black_screen_test1.exe', '192.168.48.130', 'wmi_classroom2.exe')
 
     # Step 2: execute remotely by cmd

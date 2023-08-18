@@ -173,5 +173,5 @@ def auto_open_notepad_and_type_str(english_str, wait_before_close_in_seconds=5):
 
 
 if __name__ == '__main__':
-    get_win7_scale_factor()
+    # get_win7_scale_factor()
     auto_open_notepad_and_type_str('Do you have finished the task?')
