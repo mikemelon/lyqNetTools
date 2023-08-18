@@ -6,6 +6,8 @@ import os
 from remote_utils.auto_typing import auto_open_notepad_and_type_str
 
 
+# TODO: 目前Server只能一次执行一个命令，执行完毕后才能执行其他，如果Client多次发送命令，无法连接上报错退出。
+# 应改为收到一个命令就启动一个线程，即以多线程方式执行命令。
 def black_screen():
     # 第4种方法，无需使用线程，用户在界面上输入study后退出。（目前推荐使用）
     root = tkinter.Tk()
