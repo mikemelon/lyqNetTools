@@ -158,7 +158,7 @@
      <string>远程截屏</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="radioButton_5">
+   <widget class="QRadioButton" name="remote_desktop_radio">
     <property name="geometry">
      <rect>
       <x>350</x>
@@ -168,7 +168,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>RadioButton</string>
+     <string>远程桌面</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButton_6">

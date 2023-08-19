@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\remote_control1.ui'
+# Form implementation generated from reading ui file 'remote_control1.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -53,9 +53,9 @@ class Ui_MainWindow(object):
         self.capture_screen_radio = QtWidgets.QRadioButton(self.centralwidget)
         self.capture_screen_radio.setGeometry(QtCore.QRect(210, 70, 101, 31))
         self.capture_screen_radio.setObjectName("capture_screen_radio")
-        self.radioButton_5 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton_5.setGeometry(QtCore.QRect(350, 70, 131, 31))
-        self.radioButton_5.setObjectName("radioButton_5")
+        self.remote_desktop_radio = QtWidgets.QRadioButton(self.centralwidget)
+        self.remote_desktop_radio.setGeometry(QtCore.QRect(350, 70, 131, 31))
+        self.remote_desktop_radio.setObjectName("remote_desktop_radio")
         self.radioButton_6 = QtWidgets.QRadioButton(self.centralwidget)
         self.radioButton_6.setGeometry(QtCore.QRect(500, 70, 141, 31))
         self.radioButton_6.setObjectName("radioButton_6")
@@ -94,7 +94,7 @@ class Ui_MainWindow(object):
         self.black_screen_radio.setText(_translate("MainWindow", "远程黑屏"))
         self.typing_radio.setText(_translate("MainWindow", "远程打字"))
         self.capture_screen_radio.setText(_translate("MainWindow", "远程截屏"))
-        self.radioButton_5.setText(_translate("MainWindow", "RadioButton"))
+        self.remote_desktop_radio.setText(_translate("MainWindow", "远程桌面"))
         self.radioButton_6.setText(_translate("MainWindow", "RadioButton"))
         self.menu.setTitle(_translate("MainWindow", "帮助"))
         self.menu_2.setTitle(_translate("MainWindow", "工具"))

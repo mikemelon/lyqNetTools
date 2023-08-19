@@ -1,4 +1,4 @@
-with open('dns.txt','r',encoding='utf-8') as f:
+with open('../dns.txt', 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
 ip2comment, comment2ip = {}, {}

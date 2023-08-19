@@ -14,6 +14,17 @@ import win32con
 host = '0.0.0.0'
 port = 8001
 
+# lyqnote: 这时一个实现比较"奇怪"的远程桌面。
+# 远程桌面由server.py和client.py两个程序组成。
+# 有时，还需要一个额外的config.ini文件，注意该config.ini文件只被client.py读取，里面记录了server的IP及端口号。
+# 其实现原理：server启动后，client不断在本机截屏（包含鼠标位置动作等，目前并未实现键盘位置和动作）发送给server，server收到后弹窗动态显示。
+
+# 因此要使用它，先在主控端启动server.py，
+# 然后将client.py复制到被控端（即需要显示桌面的电脑，在config.ini里写好或直接写在程序中server端IP地址及端口号）并启动。
+
+# server端关闭，会让client直接报错退出。
+# client退出或关闭(包括关闭监控窗口)，并不会影响server.
+
 
 def socket_service():
     try:
@@ -25,7 +36,7 @@ def socket_service():
     except socket.error as e:
         print(e)
         sys.exit(1)
-    print('Waiting connection...')
+    print('Remote desktop server started, waiting connection...')
 
     while True:
         conn, addr = s.accept() # accept()方法返回两个参数，第1个是socket类型，第2个是address类型（含远端客户地址，端口号）
@@ -78,7 +89,7 @@ def deal_data(conn, addr):
         if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) <= 0:
             break
         cv2.imshow(window_name, img_decode)
-        key = cv2.waitKey(20) # cv2.imshow()方法后必须跟着cv2.waitKey()方法，以展示图像20ms
+        key = cv2.waitKey(20)  # cv2.imshow()方法后必须跟着cv2.waitKey()方法，以展示图像20ms
         print(key) if key != -1 else None
 
     cv2.destroyAllWindows()
