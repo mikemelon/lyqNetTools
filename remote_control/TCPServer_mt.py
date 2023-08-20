@@ -76,6 +76,8 @@ def deal_connection(connection_socket, addr):
         _,  rd_server_host, rd_server_port  = command_str.split()
         rd_client.socket_client(rd_server_host, int(rd_server_port))
 
+        connection_socket.send(command_str.encode())
+
     connection_socket.close()
 
 

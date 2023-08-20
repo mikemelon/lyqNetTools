@@ -10,14 +10,22 @@ from net_utils.scapy_utils import get_local_ip
 import remote_desktop.server as rd_server
 
 
-# TODO: 目前多个远程控制命令共用同一个线程，这样一个命令执行完毕后，才可能执行另外一个。
-class MyWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super(MyWindow, self).__init__()
+# TODO: 目前多个远程控制命令共用同一个线程，这样一个命令执行完毕后，才可能执行另外一个。（也许这不记为Bug，而是一个Feature）
+# 注：本代码在remote_control_pyqt_testtt1.py基础上进行模块化（添加了IP地址参数），并进行了若干Bug修改。
+# 因此，不再维护原程序remote_control_pyqt_testtt1.py
+class RemoteControlWindow(QMainWindow, Ui_MainWindow):
+    def __init__(self, ip_address=None):
+        super(RemoteControlWindow, self).__init__()
         self.setupUi(self)
         self.setFixedSize(self.width(), self.height()) # 设置窗口不可调整大小
 
         self.send_to_remote_button.clicked.connect(self.send_to_remote)
+
+        if not ip_address:
+            self.ip_address = get_local_ip()  # 默认使用本机IP
+        else:
+            self.ip_address = ip_address
+        self.remote_ip_edit.setText(self.ip_address)
         self.remote_execute_thread = None
         self.remote_desktop_thread = None
 
@@ -46,7 +54,15 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
         self.remote_execute_thread = WorkThread1(remote_ip, cmd_str)
         self.remote_execute_thread.start()
+        self.remote_execute_thread.signals.connect(self.handle_remote_execute_thread_result)
         self.response_browser.setText('开始远程控制！')
+
+    def handle_remote_execute_thread_result(self, result_str):
+        print('WordThread1 returns --> {}'.format(result_str))
+        if 'Error' not in result_str:
+            self.response_browser.append(result_str + '功能执行完毕！')
+        else:
+            self.response_browser.append(result_str)
 
 
 class WorkThread1(QThread):
@@ -60,6 +76,7 @@ class WorkThread1(QThread):
     def run(self):
         start_time = time.time()
         try:
+            result_str = 'NOTING'
             serverName = self.target_ip  # Win7 remote computer
             serverPort = 12000
             clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -79,15 +96,18 @@ class WorkThread1(QThread):
 
             clientSocket.close()
 
-            result_str = 'NOTING'
             if self.target_cmd != 'CAPTURE_SCREEN':
                 result_str = receivedMessage.decode()
             print('result_str = ', result_str)
         except Exception as ex:
             print('发生异常，提示信息：{}'.format(ex))
+            result_str = '{}'.format(ex)
 
-        print('WordThread1 completed, used {:.1f} seconds'.format(time.time() - start_time))
-        self.signals.emit(result_str)
+        print('WordThread1 completed, {:.1f} seconds elapsed'.format(time.time() - start_time))
+        try:
+            self.signals.emit(result_str)
+        except Exception as ex:
+            print('emmiting ex:{}'.format(ex))
 
 
 class RemoteDesktopWorkThread(QThread):
@@ -109,6 +129,7 @@ class RemoteDesktopWorkThread(QThread):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    my_win = MyWindow()
+    # my_win = RemoteControlWindow('192.168.48.130')
+    my_win = RemoteControlWindow()
     my_win.show()
     sys.exit(app.exec_())
