@@ -7,6 +7,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
 from common_utils.config_loader import get_config
+from common_utils.file_utils import save_im_as_formatted_filename
 from net_utils.scapy_utils import get_local_ip
 import remote_desktop.server as rd_server
 import winsound
@@ -95,6 +96,9 @@ class WorkThread1(QThread):
                 print('picture saved!')
                 im_show = Image.open(io.BytesIO(receivedMessage))
                 # im_show.save('mytest.png')  # 可以存，也可以直接打开
+                saving_flag = get_config('remote_control', 'screen_saving_to_client', to_bool=True)
+                if saving_flag:
+                    save_im_as_formatted_filename(im_show, self.target_ip)
                 im_show.show()
             else:
                 print('From Server:', receivedMessage.decode())

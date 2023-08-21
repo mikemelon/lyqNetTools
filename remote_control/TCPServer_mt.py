@@ -1,9 +1,10 @@
 from socket import socket, AF_INET, SOCK_STREAM
 import tkinter
-import pyautogui
+from PIL import ImageGrab
 import io
 import os
 from common_utils.config_loader import get_config
+from common_utils.file_utils import save_screencapture_as_formatted_filename
 from remote_utils.auto_typing import auto_open_notepad_and_type_str
 import threading
 import remote_desktop.client as rd_client
@@ -61,9 +62,15 @@ def deal_connection(connection_socket, addr):
 
     elif command_str == 'CAPTURE_SCREEN':
         print('I will capture your screen')
-        im = pyautogui.screenshot()
+        # im = pyautogui.screenshot()
+        # im = ImageGrab.grab()  # 从pyautogui方式抓图，改为PIL的ImageGrab抓图
         # screenshots_file_path = r'c:\screen_shot888.png'  # 可以不存
         # im.save(screenshots_file_path)
+        saving_flag = get_config('remote_control', 'screen_saving_on_server', to_bool=True)
+        if saving_flag:
+            im = save_screencapture_as_formatted_filename()
+        else:
+            im = im = ImageGrab.grab()  # 从pyautogui方式抓图，改为PIL的ImageGrab抓图
         bytes_io = io.BytesIO()
         im.save(bytes_io, format='PNG')
         image_bytes = bytes_io.getvalue()
