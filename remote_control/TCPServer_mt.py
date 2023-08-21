@@ -3,6 +3,7 @@ import tkinter
 import pyautogui
 import io
 import os
+from common_utils.config_loader import get_config
 from remote_utils.auto_typing import auto_open_notepad_and_type_str
 import threading
 import remote_desktop.client as rd_client
@@ -19,10 +20,11 @@ def black_screen():
     x, y = str(x), str(y)  # x = str((x-1000)) 替换为本行及下面行以让黑窗口左侧有1000空隙
     root.geometry((x + "x" + y + '+0+0'))  # root.geometry((x+"x"+y+'+1000+0')) 替换为本行及上面行以让黑窗口左侧有1000空隙
     root.wm_attributes("-topmost", 1)  # 一定要最后测试号再设置为置顶，否则无法操作，只能重启系统！！！
+    black_screen_exit_word = get_config('remote_control', 'black_screen_exit_word')
 
     def get_value():
         input_str = entry.get()
-        if input_str == 'study':
+        if input_str == black_screen_exit_word:
             # root.quit() # 在这里用quit()会造成程序无法响应，换用destroy()
             root.destroy()
             # sys.exit()
@@ -30,7 +32,8 @@ def black_screen():
 
     entry = tkinter.Entry(root)
     entry.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-    button = tkinter.Button(root, text='请在上面输入框里输入"study"以退出黑屏', command=get_value)
+    notice_text = '请在上面输入框里输入"' + black_screen_exit_word + '"以退出黑屏'
+    button = tkinter.Button(root, text=notice_text, command=get_value)
     button.place(relx=0.5, rely=0.65, anchor=tkinter.CENTER)
     root.mainloop()
 
@@ -43,7 +46,9 @@ def deal_connection(connection_socket, addr):
 
     if command_str == 'RESTART':
         print('I will restart!')
-        cmd_call = r'shutdown -r -f -t 20 -c "检测到你没有认真做实验，系统将重启！"'  # 20秒内重启，测试成功
+        restart_notice_message = get_config('remote_control', 'restart_notice_message')
+        restart_wait_seconds = get_config('remote_control', 'restart_wait_seconds')
+        cmd_call = r'shutdown -r -f -t ' + restart_wait_seconds + ' -c ' + restart_notice_message  # 20秒内重启，测试成功
         os.system(cmd_call)
 
         connection_socket.send(command_str.encode())
@@ -68,7 +73,8 @@ def deal_connection(connection_socket, addr):
     elif command_str == 'AUTO_TYPING':
         print('I will let you typing some characters')
         pythoncom.CoInitialize() # 由于auto_open_notepad_and_type_str()方法里有用到wmi，且在线程中启动，必须初始化和反初始化
-        auto_open_notepad_and_type_str('Please study hard, or you should be controlled!')
+        auto_typing_sentence = get_config('remote_control', 'auto_typing_sentence')
+        auto_open_notepad_and_type_str(auto_typing_sentence)
         pythoncom.CoUninitialize()
         connection_socket.send(command_str.encode())
 
@@ -82,11 +88,11 @@ def deal_connection(connection_socket, addr):
 
 
 if __name__ == '__main__':
-    serverPort = 12000
+    serverPort = get_config('remote_control','server_port', to_int=True) # default 12000
     serverSocket = socket(AF_INET, SOCK_STREAM)
     serverSocket.bind(('', serverPort))
     serverSocket.listen(1)
-    print('The server is ready to receive')
+    print('The Remote Control TCPServer is ready to receive')
     while True:
         conn_socket, remote_addr = serverSocket.accept()
         t = threading.Thread(target=deal_connection, args=(conn_socket, remote_addr))

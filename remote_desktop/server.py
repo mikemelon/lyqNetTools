@@ -10,9 +10,10 @@ import hashlib
 import numpy as np
 import win32api
 import win32con
+from common_utils.config_loader import get_config
 
 host = '0.0.0.0'
-port = 8001
+port = get_config('remote_desktop', 'server_port', to_int=True) # 默认 8001
 
 # lyqnote: 这时一个实现比较"奇怪"的远程桌面。
 # 远程桌面由server.py和client.py两个程序组成。

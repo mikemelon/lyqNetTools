@@ -6,8 +6,10 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import QThread, pyqtSignal
 from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
+from common_utils.config_loader import get_config
 from net_utils.scapy_utils import get_local_ip
 import remote_desktop.server as rd_server
+import winsound
 
 
 # TODO: 目前多个远程控制命令共用同一个线程，这样一个命令执行完毕后，才可能执行另外一个。（也许这不记为Bug，而是一个Feature）
@@ -48,7 +50,8 @@ class RemoteControlWindow(QMainWindow, Ui_MainWindow):
             # 这里，rd_server_ip是指remote desktop server's ip，即远程桌面服务器的IP地址
             # 对于本应用，是指发送该命令的教师机（主控机）的本机IP地址。
             # rd_server_port固定为8001, 如需修改，可参看remote_desktop下的server.py和client.py
-            cmd_str = 'REMOTE_DESKTOP ' + get_local_ip() + ' 8001'
+            rd_server_port = get_config('remote_desktop','server_port')
+            cmd_str = 'REMOTE_DESKTOP ' + get_local_ip() + ' ' + rd_server_port
             self.remote_desktop_thread = RemoteDesktopWorkThread()
             self.remote_desktop_thread.start()
 
@@ -61,8 +64,10 @@ class RemoteControlWindow(QMainWindow, Ui_MainWindow):
         print('WordThread1 returns --> {}'.format(result_str))
         if 'Error' not in result_str:
             self.response_browser.append(result_str + '功能执行完毕！')
+            winsound.Beep(350, 150)
         else:
             self.response_browser.append(result_str)
+            winsound.PlaySound('SystemQuestion', winsound.SND_ALIAS)
 
 
 class WorkThread1(QThread):
@@ -107,7 +112,7 @@ class WorkThread1(QThread):
         try:
             self.signals.emit(result_str)
         except Exception as ex:
-            print('emmiting ex:{}'.format(ex))
+            print('WorkThread1 emiting ex:{}'.format(ex))
 
 
 class RemoteDesktopWorkThread(QThread):
@@ -124,7 +129,10 @@ class RemoteDesktopWorkThread(QThread):
             print('发生异常，提示信息：{}'.format(ex))
 
         print('RemoteDesktopWorkThread completed, used {:.1f} seconds'.format(time.time() - start_time))
-        self.signals.emit(ex)  # 只返回异常信息
+        try:
+            self.signals.emit('{}'.format(ex))  # 只返回异常信息
+        except Exception as ex2:
+            print('RemoteDesktopWorkThread emiting ex:{}'.format(ex2))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 from PIL import ImageGrab
 from pynput.mouse import Controller, Button
+from common_utils.config_loader import get_config
 from configparser import RawConfigParser
 import numpy as np
 import socket
@@ -15,12 +16,14 @@ import threading
 # pyinstaller 打包时需添加 --hidden-import=pynput.keyboard._win32 --hidden-import=pynput.mouse._win32
 
 resolution = (win32api.GetSystemMetrics(win32con.SM_CXSCREEN), win32api.GetSystemMetrics(win32con.SM_CYSCREEN))
+# resize指定实际显示窗口的分辨率
 # resize = (1440, 800) # 16: 9
-resize = (1366, 768) # 16: 9
+# resize = (1366, 768) # 16: 9, default
 # resize = (1920, 1080) # 16: 9
 # resize = (800, 600)  # 4 : 3
 # resize = (1024, 768)  # 4 : 3
-
+resize = (get_config('remote_desktop', 'resize_width', to_int=True),
+          get_config('remote_desktop', 'resize_height', to_int=True))
 
 class MyConfigParser(RawConfigParser):
     def __init__(self, defaults=None):
