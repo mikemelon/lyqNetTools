@@ -13,3 +13,23 @@
 - **remote_control_pyqt_test1.py** ---- "局域网远程控制"，基于TCP实现的一些简单远程控制功能
 
 ![局域网远程控制](screenshots/remote_control_pyqt_test1.png)
+
+- **computer_browser_test1.py** ---- "局域网搜索"，搜索结果可以进一步远程控制（远程黑屏、远程关机等）或远程桌面。
+
+![局域网内存活主机搜索](screenshots/computer_browser1.png)
+
+- **TCPServer_mt.py** ---- 局域网远程控制效果1---远程黑屏。
+
+![局域网远程控制--远程黑屏](screenshots/black_screen1.png)
+
+- **TCPServer_mt.py** ---- 局域网远程控制效果2---远程桌面。
+
+![局域网远程控制--远程桌面](screenshots/remote_desk1.png)
+
+- **TCPServer_mt.py** ---- 局域网远程控制效果3---远程桌面。
+
+![局域网远程控制--远程重启](screenshots/restart_control1.png)
+
+
+
+
