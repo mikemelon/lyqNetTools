@@ -69,7 +69,7 @@ def check_google_chrome_by_reg2():
 def check_browser_with_path():
     """
     检查浏览器及其路径。目前的实现：先检查Microsoft Edge, 再检查Google Chrome。
-    :return: (浏览器类型，路径) 的元组，如果没返回(即返回None)，则说明没找到。
+    :return: (浏览器类型，路径) 的元组，如果返回None，则说明没找到。
     """
     browser_path = check_microsoft_edge()
     if browser_path:
@@ -79,9 +79,6 @@ def check_browser_with_path():
     if browser_path:
         return 'chrome', browser_path
 
-    return None, None
-
-def wocao():
     return None, None
 
 
@@ -103,8 +100,3 @@ if __name__ == '__main__':
         print('浏览器程序所在路径：', browser_path)
 
     print(check_browser_with_path())
-
-    aa, bb = wocao()
-    print(aa)
-    print(bb)
-    print('here')

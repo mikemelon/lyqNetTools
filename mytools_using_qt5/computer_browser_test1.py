@@ -102,6 +102,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def update_ui(self, living_host_list):
         living_host_list.append('192.168.48.130')
+        living_host_list.append('172.28.160.99')
         num_of_hosts = len(living_host_list)
         row_num = int(num_of_hosts / MyWindow.COLUMN_CNT + 1)
         column_num_remamins = int(num_of_hosts % MyWindow.COLUMN_CNT)

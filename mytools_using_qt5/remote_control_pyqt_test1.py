@@ -1,6 +1,8 @@
 import sys
 import io
+import os
 import time
+import subprocess
 from qt5.remote_control1 import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -20,6 +22,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.send_to_remote_button.clicked.connect(self.send_to_remote)
         self.remote_execute_thread = None
         self.remote_desktop_thread = None
+        self.desktop_broadcast_server_process = None
 
     def send_to_remote(self):
         remote_ip = self.remote_ip_edit.text()
@@ -43,10 +46,35 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             cmd_str = 'REMOTE_DESKTOP ' + get_local_ip() + ' 8001'
             self.remote_desktop_thread = RemoteDesktopWorkThread()
             self.remote_desktop_thread.start()
+        elif self.desktop_broadcast_radio.isChecked():
+            cmd_str = 'OPEN_DESKTOP_BROADCAST'
+            self.start_desktop_broadcast_server()
+        elif self.close_desktop_broadcast_radio.isChecked():
+            cmd_str = 'CLOSE_DESKTOP_BROADCAST'
+            self.stop_desktop_broadcast_server()
 
         self.remote_execute_thread = WorkThread1(remote_ip, cmd_str)
         self.remote_execute_thread.start()
         self.response_browser.setText('开始远程控制！')
+
+    def start_desktop_broadcast_server(self):
+        try:
+            # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
+            server_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\webrtc-streamer-v0.8.2-dirty-Windows-AMD64-Release'
+            self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location, 'webrtc-streamer.exe'),
+                                                                      '-H', '0.0.0.0:9001', 'screen://3'], cwd=server_location, shell=False)
+        except Exception as ex:
+            print('Exception wile start desktop_broadcast_server:{}'.format(ex))
+
+    def stop_desktop_broadcast_server(self):
+        try:
+            if self.desktop_broadcast_server_process:
+                self.desktop_broadcast_server_process.terminate()
+                self.desktop_broadcast_server_process.kill()
+                time.sleep(1) # 会造成界面失去响应
+                os.system('taskkill /t /f /pid {}'.format(self.desktop_broadcast_server_process.pid)) # /t选项，关闭自己和由它启动的子进程
+        except Exception as ex:
+            print('Exception while Stopping desktop_broadcast_server:', ex)
 
 
 class WorkThread1(QThread):

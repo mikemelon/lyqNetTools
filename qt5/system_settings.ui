@@ -170,7 +170,7 @@
      <attribute name="title">
       <string>RTSP流媒体服务设置</string>
      </attribute>
-     <widget class="QRadioButton" name="radioButton">
+     <widget class="QRadioButton" name="easydarwin_radio">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -186,7 +186,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton_2">
+     <widget class="QRadioButton" name="mediamtx_radio">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -199,7 +199,7 @@
        <string>Mediamtx</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton_3">
+     <widget class="QRadioButton" name="happytime_radio">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -271,6 +271,32 @@
       </property>
       <property name="openExternalLinks">
        <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="start_rtsp_server_btn">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>240</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>启动服务</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="stop_rtsp_server_button">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>240</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>关闭服务</string>
       </property>
      </widget>
     </widget>

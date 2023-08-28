@@ -3,15 +3,19 @@ import tkinter
 from PIL import ImageGrab
 import io
 import os
+import subprocess
 from common_utils.config_loader import get_config
 from common_utils.file_utils import save_screencapture_as_formatted_filename
+from common_utils.check_browser_utils import check_browser_with_path
 from remote_utils.auto_typing import auto_open_notepad_and_type_str
 import threading
 import remote_desktop.client as rd_client
 import pythoncom
 
-
 # 相比TCPServer.py，本程序改为收到一个命令就启动一个线程，即以多线程方式执行命令。
+browser_process = None  # 浏览器进程，用于“桌面广播”功能
+
+
 def black_screen():
     # 第4种方法，无需使用线程，用户在界面上输入study后退出。（目前推荐使用）
     root = tkinter.Tk()
@@ -40,6 +44,7 @@ def black_screen():
 
 
 def deal_connection(connection_socket, addr):
+    global browser_process  # 浏览器进程，用于“桌面广播”功能
     print('TCPServer收到来自{}的远程地址连接：'.format(addr))
     sentence = connection_socket.recv(5 * 1024 * 1024).decode()
     print('recv:{}, connectionSocket:{}'.format(sentence, connection_socket))
@@ -64,13 +69,13 @@ def deal_connection(connection_socket, addr):
         print('I will capture your screen')
         # im = pyautogui.screenshot()
         # im = ImageGrab.grab()  # 从pyautogui方式抓图，改为PIL的ImageGrab抓图
-        # screenshots_file_path = r'c:\screen_shot888.png'  # 可以不存
+        # screenshots_file_path = "c:\\screen_shot888.png"  # 可以不存
         # im.save(screenshots_file_path)
         saving_flag = get_config('remote_control', 'screen_saving_on_server', to_bool=True)
         if saving_flag:
             im = save_screencapture_as_formatted_filename()
         else:
-            im = im = ImageGrab.grab()  # 从pyautogui方式抓图，改为PIL的ImageGrab抓图
+            im = ImageGrab.grab()  # 从pyautogui方式抓图，改为PIL的ImageGrab抓图
         bytes_io = io.BytesIO()
         im.save(bytes_io, format='PNG')
         image_bytes = bytes_io.getvalue()
@@ -79,23 +84,46 @@ def deal_connection(connection_socket, addr):
 
     elif command_str == 'AUTO_TYPING':
         print('I will let you typing some characters')
-        pythoncom.CoInitialize() # 由于auto_open_notepad_and_type_str()方法里有用到wmi，且在线程中启动，必须初始化和反初始化
+        pythoncom.CoInitialize()  # 由于auto_open_notepad_and_type_str()方法里有用到wmi，且在线程中启动，必须初始化和反初始化
         auto_typing_sentence = get_config('remote_control', 'auto_typing_sentence')
         auto_open_notepad_and_type_str(auto_typing_sentence)
         pythoncom.CoUninitialize()
         connection_socket.send(command_str.encode())
 
     elif 'REMOTE_DESKTOP' in command_str:
-        _,  rd_server_host, rd_server_port  = command_str.split()
+        _,  rd_server_host, rd_server_port = command_str.split()
         rd_client.socket_client(rd_server_host, int(rd_server_port))
 
         connection_socket.send(command_str.encode())
+
+    elif 'OPEN_DESKTOP_BROADCAST' in command_str:
+        _,  broadcast_server_host, broadcast_server_port = command_str.split()
+        browser_type, browser_path = check_browser_with_path()
+        if browser_type:
+            broadcast_viewing_address = ('http://' + broadcast_server_host + ':' + broadcast_server_port
+                                         + '/lyq_webrtcstreamer.html?video=screen://3')
+            if browser_type == 'edge':  # 进入Microsoft Edge的kiosk模式
+                browser_process = subprocess.Popen([browser_path, '--kiosk', broadcast_viewing_address,
+                                                    '--edge-kiosk-type=fullscreen'], shell=False)
+            elif browser_type == 'chrome':  # 进入Google Chrome的kiosk模式
+                browser_process = subprocess.Popen([browser_path, '--kiosk', '-fullscreen',
+                                                    broadcast_viewing_address], shell=False)
+
+        else:
+            print('No suitable Browser Found')  # TODO: 显示一个对话框
+    elif command_str == 'CLOSE_DESKTOP_BROADCAST':
+        try:
+            if browser_process:
+                browser_process.terminate()
+                browser_process.kill()
+        except Exception as ex:
+            print('Exception while Stopping browser process:', ex)
 
     connection_socket.close()
 
 
 if __name__ == '__main__':
-    serverPort = get_config('remote_control','server_port', to_int=True) # default 12000
+    serverPort = get_config('remote_control', 'server_port', to_int=True)  # default 12000
     serverSocket = socket(AF_INET, SOCK_STREAM)
     serverSocket.bind(('', serverPort))
     serverSocket.listen(1)
