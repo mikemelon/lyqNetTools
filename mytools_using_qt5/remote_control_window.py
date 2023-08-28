@@ -97,7 +97,7 @@ class RemoteControlWindow(QMainWindow, Ui_MainWindow):
                 self.desktop_broadcast_server_process.terminate()
                 self.desktop_broadcast_server_process.kill()
                 time.sleep(1) # 会造成界面失去响应
-                os.system('taskkill /t /f /pid {}'.format(self.desktop_broadcast_server_process.pid)) # /t选项，关闭自己和由它启动的子进程
+                # os.system('taskkill /t /f /pid {}'.format(self.desktop_broadcast_server_process.pid)) # /t选项，关闭自己和由它启动的子进程
         except Exception as ex:
             print('Exception while Stopping desktop_broadcast_server:', ex)
 
