@@ -6,6 +6,7 @@ import time
 from qt5.remote_control1 import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtGui import QIcon
 from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
 from common_utils.config_loader import get_config
@@ -22,6 +23,7 @@ class RemoteControlWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, ip_address=None):
         super(RemoteControlWindow, self).__init__()
         self.setupUi(self)
+        self.setWindowIcon(QIcon('../images/logo2.png'))
         self.setFixedSize(self.width(), self.height()) # 设置窗口不可调整大小
 
         self.send_to_remote_button.clicked.connect(self.send_to_remote)
@@ -115,7 +117,7 @@ class WorkThread1(QThread):
         try:
             result_str = 'NOTING'
             serverName = self.target_ip  # Win7 remote computer
-            serverPort = 12000
+            serverPort = get_config('remote_control', 'server_port', to_int=True)  # default 12000
             clientSocket = socket(AF_INET, SOCK_STREAM)
             clientSocket.connect((serverName, serverPort))
             # sentence = input('Input lowercase sentence:')

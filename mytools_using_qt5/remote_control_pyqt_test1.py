@@ -6,6 +6,7 @@ import subprocess
 from qt5.remote_control1 import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtGui import QIcon
 from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
 from net_utils.scapy_utils import get_local_ip
@@ -17,6 +18,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
         self.setupUi(self)
+        self.setWindowIcon(QIcon('../images/logo2.png'))
         self.setFixedSize(self.width(), self.height()) # 设置窗口不可调整大小
 
         self.send_to_remote_button.clicked.connect(self.send_to_remote)

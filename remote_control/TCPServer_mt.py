@@ -3,6 +3,7 @@ import tkinter
 from PIL import ImageGrab
 import io
 import os
+import time
 import subprocess
 from common_utils.config_loader import get_config
 from common_utils.file_utils import save_screencapture_as_formatted_filename
@@ -114,8 +115,12 @@ def deal_connection(connection_socket, addr):
     elif command_str == 'CLOSE_DESKTOP_BROADCAST':
         try:
             if browser_process:
+                print('browser_process is alive: its pid is {}'.format(browser_process.pid))
                 browser_process.terminate()
                 browser_process.kill()
+                time.sleep(1)
+            else:
+                print('browser_process is None!')
         except Exception as ex:
             print('Exception while Stopping browser process:', ex)
 
