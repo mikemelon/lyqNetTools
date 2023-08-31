@@ -1,5 +1,6 @@
 import configparser
 import os
+from common_utils.config_loader import get_config
 
 config = configparser.ConfigParser()
 config.read('./test.conf', encoding='utf-8')
@@ -26,4 +27,9 @@ print(config.get('section2', 'user_name'))  # 不用config.write()实际写入�
 print('__file__ is ', __file__)
 print('os.path.abspath(__file__) is', os.path.abspath(__file__))
 print('dir name is', os.path.dirname(os.path.abspath(__file__)))
-os.path.basename()
+
+server_path = get_config('desktop_broadcast','webrtc_streamer_location', trim_double_quote=True)
+# server_path =  server_path[1:] if server_path.startswith('"') else server_path
+# server_path =  server_path[:-1] if server_path.endswith('"') else server_path
+print('[{}]'.format(server_path))
+print('webrtc streamer服务文件是否存在？{}'.format(os.path.exists(os.path.join(server_path, 'webrtc-streamer.exe'))))

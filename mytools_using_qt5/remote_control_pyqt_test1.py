@@ -9,6 +9,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
 from socket import socket, AF_INET, SOCK_STREAM
 from PIL import Image
+from common_utils.config_loader import get_config
 from net_utils.scapy_utils import get_local_ip
 import remote_desktop.server as rd_server
 
@@ -61,10 +62,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def start_desktop_broadcast_server(self):
         try:
-            # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            server_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\webrtc-streamer-v0.8.2-dirty-Windows-AMD64-Release'
-            self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location, 'webrtc-streamer.exe'),
-                                                                      '-H', '0.0.0.0:9001', 'screen://3'], cwd=server_location, shell=False)
+            server_location = get_config('desktop_broadcast','webrtc_streamer_location',
+                                         trim_double_quote=True)
+            self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location,
+                                                                                   'webrtc-streamer.exe'),
+                                                                      '-H', '0.0.0.0:9001', 'screen://3'],
+                                                                     cwd=server_location, shell=False)
         except Exception as ex:
             print('Exception wile start desktop_broadcast_server:{}'.format(ex))
 

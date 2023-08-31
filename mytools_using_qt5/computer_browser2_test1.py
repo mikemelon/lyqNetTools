@@ -5,8 +5,8 @@ import subprocess
 import time
 from qt5.computer_browser2 import Ui_MainWindow
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QMessageBox, QMenu, QAction
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QMessageBox, QMenu, QAction, QSplashScreen
 from PIL import Image
 from socket import socket, AF_INET, SOCK_STREAM
 from net_utils.scapy_utils import get_living_hosts_by_arp_ping, get_gateway_ip, get_local_ip
@@ -70,6 +70,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         #  用于桌面广播功能，实现方式：首先，启动桌面广播服务器；然后根据需要广播的IP的个数，建立线程列表list, 逐个发送命令，要求其打开桌面广播。
         self.desktop_broadcast_server_process = None
         self.desktop_broadcast_thread_list = []
+
+        self.splash = QSplashScreen(QPixmap('../images/splash_title.png'))
+
+
+
 
     # def item_clicked(self, item:QTableWidgetItem):
     #     row, column = item.row(), item.column()
@@ -199,8 +204,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def start_desktop_broadcast_server(self):
         try:
-            # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            server_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\webrtc-streamer-v0.8.2-dirty-Windows-AMD64-Release'
+            server_location = get_config('desktop_broadcast','webrtc_streamer_location',
+                                         trim_double_quote=True)
             desktop_broadcast_server_port = get_config('desktop_broadcast', 'server_port')
             self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location,
                                                                                    'webrtc-streamer.exe'),
@@ -315,5 +320,14 @@ def create_computer_widget(ip='x.x.x.x', name='unknown', border_style=0):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     myWin = MyWindow()
+
+    # 显示Splash Window的判断
+    show_splash_in_seconds = get_config('common', 'show_splash_in_seconds', to_int=True)
+    if show_splash_in_seconds > 0:
+        myWin.splash.show()  # 默认在屏幕正中，但你可以移动，用self.splash.move(10,10)
+        myWin.splash.move(myWin.splash.x(), myWin.splash.y()-100)
+        QTimer.singleShot(show_splash_in_seconds*1000, myWin.splash.close)  # Close SplashScreen after in seconds (ms)
+        time.sleep(show_splash_in_seconds)
+
     myWin.show()
     sys.exit(app.exec_())

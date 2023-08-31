@@ -85,9 +85,11 @@ class RemoteControlWindow(QMainWindow, Ui_MainWindow):
     def start_desktop_broadcast_server(self):
         try:
             # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            server_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\webrtc-streamer-v0.8.2-dirty-Windows-AMD64-Release'
+            server_location = get_config('desktop_broadcast','webrtc_streamer_location',
+                                         trim_double_quote=True)
             desktop_broadcast_server_port = get_config('desktop_broadcast', 'server_port')
-            self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location, 'webrtc-streamer.exe'),
+            self.desktop_broadcast_server_process = subprocess.Popen([os.path.join(server_location,
+                                                                                   'webrtc-streamer.exe'),
                                                                       '-H', '0.0.0.0:'+desktop_broadcast_server_port,
                                                                       'screen://3'], cwd=server_location, shell=False)
         except Exception as ex:

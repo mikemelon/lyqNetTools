@@ -5,8 +5,8 @@ from pprint import pprint
 
 start_time = time.time()
 c = wmi.WMI(find_classes=False)
-# c = wmi.WMI(computer='192.168.68.223', user='ec1', password='tplink', find_classes=False)  # Win10专业版物理机，连接成功！
-# c = wmi.WMI(computer='192.168.48.130', user='lynulyq', password='tplink', find_classes=False)  # VMWare里的Win7企业版，连接成功！
+# c = wmi.WMI(computer='192.168.68.223', user='ec1', password='12345678', find_classes=False)  # Win10专业版物理机，连接成功！
+# c = wmi.WMI(computer='192.168.48.130', user='lynulyq', password='12345678', find_classes=False)  # VMWare里的Win7企业版，连接成功！
 # c = wmi.WMI(computer='192.168.48.131', user='Administrator', password='12345678',find_classes=False)  # VMWare里的WinXP专业版(关闭Windows防火墙后连接成功）
 
 # perf_classes = c.subclasses_of("Win32_PerfRawData")

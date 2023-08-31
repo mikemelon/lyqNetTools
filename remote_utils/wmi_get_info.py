@@ -114,7 +114,7 @@ def get_network_devices(wmi_obj):
 if __name__ == '__main__':
     start_time = time.time()
 
-    # my_wmi_obj = wmi.WMI(computer='192.168.68.223', user='ec1', password='tplink')  # Win10专业版物理机，连接成功！
+    # my_wmi_obj = wmi.WMI(computer='192.168.68.223', user='ec1', password='12345678')  # Win10专业版物理机，连接成功！
     my_wmi_obj = wmi.WMI(computer='192.168.48.130',
                          user='lynulyq', password='12345678')  # VMWare里的Win7企业版，连接成功！
     # my_wmi_obj = wmi.WMI(computer='192.168.48.131',

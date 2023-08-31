@@ -3,7 +3,7 @@ from remote_utils.wmi_remote_exec import execute_cmd_by_wmi, execute_cmd_by_scht
 import wmi
 
 if __name__ == '__main__':
-    # my_wmi_obj = wmi.WMI(computer='192.168.68.223', user='ec1', password='tplink')  # Win10专业版物理机，连接成功！
+    # my_wmi_obj = wmi.WMI(computer='192.168.68.223', user='ec1', password='123456')  # Win10专业版物理机，连接成功！
     # my_wmi_obj = wmi.WMI(computer='192.168.48.130',
     #                      user='lynulyq', password='12345678')  # VMWare里的Win7企业版，连接成功！
     # my_wmi_obj = wmi.WMI(computer='192.168.48.131',
@@ -28,4 +28,4 @@ if __name__ == '__main__':
 
     # execute_cmd_by_wmi(my_wmi_obj, r'c:\wmi_classroom_jietu2.exe -f screen001.png')
     #
-    # copy_remote_file_to_local('screen001.png', '192.168.48.130', 'lynulyq','tplink', r'D:\PycharmProjects\lyqNetTools\wmi_tests\remote_screen.png')
+    # copy_remote_file_to_local('screen001.png', '192.168.48.130', 'lynulyq','12345678', r'D:\PycharmProjects\lyqNetTools\wmi_tests\remote_screen.png')

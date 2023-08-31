@@ -5,6 +5,7 @@ import time
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QMainWindow, QApplication
+from common_utils.config_loader import get_config
 from qt5.system_settings import Ui_MainWindow
 
 
@@ -77,9 +78,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def start_easydarwin(self):
         try:
-            # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            darwin_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\EasyDarwin-windows-8.1.0-1901141151'
-            self.easydarwin_process = subprocess.Popen([os.path.join(darwin_location, 'EasyDarwin.exe')], shell=False)
+            darwin_location = get_config('desktop_broadcast', 'easydarwin_location',
+                                         trim_double_quote=True)
+            self.easydarwin_process = subprocess.Popen([os.path.join(darwin_location, 'EasyDarwin.exe')],
+                                                       shell=False)
         except Exception as ex:
             print('Exception wile start easydarwin:{}'.format(ex))
 
@@ -95,9 +97,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def start_mediamtx(self):
         try:
-            # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            mediamtx_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\mediamtx1.0'
-            self.mediamtx_process = subprocess.Popen([os.path.join(mediamtx_location, 'mediamtx.exe')], shell=False)
+            mediamtx_location = get_config('desktop_broadcast', 'mediamtx_location',
+                                           trim_double_quote=True)
+            self.mediamtx_process = subprocess.Popen([os.path.join(mediamtx_location, 'mediamtx.exe')],
+                                                     shell=False)
         except Exception as ex:
             print('Exception wile start mediamtx:{}'.format(ex))
 
@@ -114,9 +117,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def start_happytime(self):
         try:
             # TODO: 将服务器地址改为相对路径转为的绝对路径，或从用户获取
-            happytime_location = r'C:\Users\mikemelon2021\Desktop\StreamingTest\happytime-rtsp-server-x64'
-            self.happytime_process = subprocess.Popen([os.path.join(happytime_location, 'RtspServer.exe')], shell=False,
-                                                      stdout=sys.stdout, stderr=sys.stderr)
+            happytime_location = get_config('desktop_broadcast', 'happytime_location',
+                                            trim_double_quote=True)
+            self.happytime_process = subprocess.Popen([os.path.join(happytime_location, 'RtspServer.exe')],
+                                                      shell=False, stdout=sys.stdout, stderr=sys.stderr)
             # 奇怪的是 Happytime Server没有向控制台打印任何内容, 进程启动了，占用了554(rtsp)端口，但没有像占用80(命令行下启动是占用的）
             # Happytime还有一些很好的特性，比如抓桌面、抓指定窗口、抓摄像头，抓麦克风、抓麦克风+摄像头等
             # > RtspServer -l device 显示音视频设备（摄像头、麦克风等）

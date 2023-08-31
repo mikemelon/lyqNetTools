@@ -78,9 +78,9 @@ class WorkThread(QThread):
         start_time = time.time()
         pythoncom.CoInitialize()
         # pc = wmi.WMI(find_classes=False)
-        pc = wmi.WMI(computer='192.168.68.223', user='ec1', password='tplink',
+        pc = wmi.WMI(computer='192.168.68.223', user='ec1', password='12345678',
                      find_classes=False)  # Win10专业版物理机，连接成功！
-        # pc = wmi.WMI(computer='192.168.48.130', user='lynulyq', password='tplink', find_classes=False)  # VMWare里的Win7企业版，连接成功！
+        # pc = wmi.WMI(computer='192.168.48.130', user='lynulyq', password='12345678', find_classes=False)  # VMWare里的Win7企业版，连接成功！
         # pc = wmi.WMI(computer='192.168.48.131', user='Administrator', password='12345678', find_classes=False) # VMWare里的WinXP专业版(关闭Windows防火墙后连接成功）
         process_list = pc.Win32_Process()
         print('wmi load process_list used {:.1f} seconds'.format(time.time() - start_time))
@@ -98,7 +98,7 @@ class WorkThread2(QThread):
         start_time = time.time()
         pythoncom.CoInitialize()
         pc = wmi.WMI(find_classes=False)
-        # pc = wmi.WMI(computer='192.168.68.223', user='ec1', password='tplink',
+        # pc = wmi.WMI(computer='192.168.68.223', user='ec1', password='12345678',
         #                      find_classes=False)  # Win10专业版物理机，连接成功！
         # pc = wmi.WMI(computer='192.168.48.130', user='lynulyq', password='12345678', find_classes=False)  # VMWare里的Win7企业版，连接成功！
         # pc = wmi.WMI(computer='192.168.48.131', user='Administrator', password='12345678', find_classes=False) # VMWare里的WinXP专业版(关闭Windows防火墙后连接成功）
