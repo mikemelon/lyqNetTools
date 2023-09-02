@@ -109,6 +109,7 @@
      <string>局域网工具</string>
     </property>
     <addaction name="action_refresh_alive"/>
+    <addaction name="action_get_multiple_screen"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
    </widget>
@@ -144,6 +145,14 @@
   <action name="action_close_screen_broadcast">
    <property name="text">
     <string>关闭屏幕广播</string>
+   </property>
+  </action>
+  <action name="action_get_multiple_screen">
+   <property name="text">
+    <string>巡视主机屏幕...(&amp;N)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

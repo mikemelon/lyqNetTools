@@ -13,6 +13,7 @@ from net_utils.scapy_utils import get_living_hosts_by_arp_ping, get_gateway_ip, 
 from mytools_using_qt5.remote_control_window import RemoteControlWindow
 from common_utils.config_loader import get_config
 from common_utils.file_utils import save_im_as_formatted_filename
+from qt5_utils.multi_pictures_window import MultiPicturesWindow
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
@@ -48,33 +49,38 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         #
         self.tableWidget.resizeRowsToContents()
         self.tableWidget.resizeColumnsToContents()
-
         # self.tableWidget.itemClicked.connect(self.item_clicked)
         # self.tableWidget.cellClicked.connect(self.cell_clicked)
         # self.tableWidget.cellDoubleClicked.connect(self.cell_double_clicked)
         self.tableWidget.customContextMenuRequested.connect(self.show_custom_contex_menu)
 
-        self.action_quit.triggered.connect(self.menu_action_quit)
-        self.action_refresh_alive.triggered.connect(self.menu_action_refresh_alive)
-
+        # 按钮actioon
         self.open_screen_broadcast_btn.clicked.connect(self.open_screen_broadcast)
+        self.get_multiple_screen_btn.clicked.connect(self.show_multiple_screen)
 
+        # 菜单action
+        self.action_refresh_alive.triggered.connect(self.menu_action_refresh_alive)
         self.action_start_screen_broadcast.triggered.connect(self.open_screen_broadcast)
         self.action_close_screen_broadcast.triggered.connect(self.close_scree_broadcast)
+        self.action_get_multiple_screen.triggered.connect(self.show_multiple_screen)
+        self.action_quit.triggered.connect(self.menu_action_quit)
 
         self.living_host_dict = {}  # ip:(所在行，所在列)
         self.living_host_position_dict = {}  # (所在行，所在列): ip
         self.refresh_alive_thread = None
-        self.remote_control_window = None
+        # 连接的窗口
+        self.remote_control_window = None  # 远程控制窗口
+        self.show_multiple_screen_window = None  # 主机巡视窗口
 
         #  用于桌面广播功能，实现方式：首先，启动桌面广播服务器；然后根据需要广播的IP的个数，建立线程列表list, 逐个发送命令，要求其打开桌面广播。
         self.desktop_broadcast_server_process = None
         self.desktop_broadcast_thread_list = []
 
+        #  用于主机巡视功能，实现方式：根据要截屏的IP的个数，建立线程列表list，逐个发送命令，最后将返回的截图路径加入list
+        self.show_multiple_screen_thread_list = []
+        self.multiple_screen_file_path_list = []
+
         self.splash = QSplashScreen(QPixmap('../images/splash_title.png'))
-
-
-
 
     # def item_clicked(self, item:QTableWidgetItem):
     #     row, column = item.row(), item.column()
@@ -136,6 +142,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # living_host_list.append('172.28.160.99')
         living_host_list.append('172.30.66.84')
         living_host_list.append('192.168.68.223')
+        living_host_list.append('172.19.29.12')
 
         num_of_hosts = len(living_host_list)
         row_num = int(num_of_hosts / MyWindow.COLUMN_CNT + 1)
@@ -225,6 +232,37 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         except Exception as ex:
             print('Exception while Stopping desktop_broadcast_server:', ex)
 
+    def show_multiple_screen(self):
+        self.multiple_screen_file_path_list.clear()
+        ip_list = self.living_host_dict.keys()
+        cmd_str = 'CAPTURE_SCREEN'
+        for ip in ip_list:
+            thread = CatureScreenWorkThread(ip, cmd_str)
+            self.desktop_broadcast_thread_list.append(thread)
+            thread.start()
+            thread.signals.connect(self.handle_received_screen)
+        # file_path_list = []
+        # for n in os.listdir(r'..\images'):
+        #     file_path_list.append(os.path.join(r'..\images', n))
+        #
+        # self.show_multiple_screen_window = MultiPicturesWindow(pic_path_list=file_path_list, pic_width=200, pic_height=200, rows=3, cols=2,
+        #                            window_width=2000, window_height=1500, show_window_title=True,
+        #                            fixed_window_size=True)
+        # self.show_multiple_screen_window.show()
+
+    def handle_received_screen(self, received_screen_file_path):
+        if 'Exception' not in received_screen_file_path:
+            self.multiple_screen_file_path_list.append(received_screen_file_path)
+        else:
+            self.multiple_screen_file_path_list.append('NON_PATH') # 如果返回有异常，也作为一个路径NON_PATH便于计数
+        ip_list = self.living_host_dict.keys()
+        if len(ip_list)==len(self.multiple_screen_file_path_list):  # 如果所有线程都已经返回结果，则显示窗口
+            self.show_multiple_screen_window = MultiPicturesWindow(pic_path_list=self.multiple_screen_file_path_list,
+                                                                   pic_width=320, pic_height=240, rows=2, cols=4,
+                                                                   window_width=2000, window_height=1500,
+                                                                   show_window_title=True, fixed_window_size=True)
+            self.show_multiple_screen_window.show()
+
 
 class RefreshAliveThread(QThread):
     signals = pyqtSignal(list)
@@ -283,6 +321,48 @@ class WorkThread1(QThread):
             self.signals.emit(result_str)
         except Exception as ex:
             print('[{}]: WorkThread1 emiting ex:{}'.format(self.target_ip, ex))
+
+
+class CatureScreenWorkThread(QThread):
+    signals = pyqtSignal(str)
+
+    def __init__(self, target_ip, target_cmd):
+        super(CatureScreenWorkThread, self).__init__()
+        self.target_ip = target_ip
+        self.target_cmd = target_cmd
+
+    def run(self):
+        start_time = time.time()
+        try:
+            result_str = 'NOTING'
+            serverName = self.target_ip  # Win7 remote computer
+            serverPort = get_config('remote_control', 'server_port', to_int=True)  # default 12000
+            clientSocket = socket(AF_INET, SOCK_STREAM)
+            clientSocket.connect((serverName, serverPort))
+            sentence = self.target_cmd
+            clientSocket.send(sentence.encode())
+            receivedMessage = clientSocket.recv(5 * 1024 * 1024)
+
+            if sentence.upper() == 'CAPTURE_SCREEN':
+                print('picture saved!')
+                im_show = Image.open(io.BytesIO(receivedMessage))
+                screen_file_full_path = save_im_as_formatted_filename(im_show, self.target_ip)
+                # im_show.show()
+            else:
+                print('[{}]:From Server:{}'.format(self.target_ip, receivedMessage.decode()))
+
+            clientSocket.close()
+
+            result_str = screen_file_full_path
+        except Exception as ex:
+            print('[{}]: 发生异常，提示信息：{}'.format(self.target_ip, ex))
+            result_str = 'Exception: {}'.format(ex)
+
+        print('[{}]:CatureScreenWorkThread completed, {:.1f} seconds elapsed'.format(self.target_ip, time.time() - start_time))
+        try:
+            self.signals.emit(result_str)
+        except Exception as ex:
+            print('[{}]: CatureScreenWorkThread emiting ex:{}'.format(self.target_ip, ex))
 
 
 def create_computer_widget(ip='x.x.x.x', name='unknown', border_style=0):

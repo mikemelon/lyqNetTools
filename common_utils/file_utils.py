@@ -26,6 +26,7 @@ def save_im_as_formatted_filename(im, ip_address):
     image_abs_path = os.path.join(upper_dir, 'screencaptures',
                                   'screencapture_' + ip_address + '_' + formatted_time + '.png')
     im.save(image_abs_path)
+    return image_abs_path
 
 
 if __name__ == '__main__':
